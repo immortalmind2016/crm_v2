@@ -9,13 +9,35 @@ const users = require("./routes/api/users.routes");
 
 const conversation = require("./routes/api/conversation.routes");
 
-app.use(cors())
-app.options('*', cors())
+app.use(cors({credentials: true}));
+const url='http://localhost:3000'
+app.options(url, cors())
+
+
+const http=require("http").Server(app)
+
+ const io=require("socket.io")(http,{
+  secure:true,
+
+reconnect: true,
+
+rejectUnauthorized : false
+
+})
+
+io.set('origins', '*:*');
+io.on("connection",(socket)=>{
+  console.log("SOCKET")
+})
+
+const sendMsg=(msg)=>{
+  io.sockets.emit(msg)
+}
 
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", url);
   res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-  res.header("Access-Control-Allow-Headers", "*");
+  res.header("Access-Control-Allow-Headers", url);
   next();
 });
 
@@ -39,11 +61,13 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch(err => console.log(err));
 
+
+
 // Routes
 app.use('/auth', authentication);
 app.use('/user', users);
 
-app.use('/conv', conversation);
+app.use('/conv', conversation(io));
 // Passport middleware
 app.use(passport.initialize());
 
@@ -54,4 +78,9 @@ require("./config/passport")(passport);
 
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`Server up and running on port ${port} !`));
+
+http.listen(port, () => console.log(`Server up and running on port ${port} !`));
+
+module.exports={
+  sendMsg
+}

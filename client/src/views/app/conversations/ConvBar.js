@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MessageCard from "../../../components/applications/MessageCard"
 const ConvBar = props => {
-    
+    console.log(props.newMsg , "PROPS MSG")
     return (
         <div className='conv-bar'>
            <div className="conv-bar__header text-center">
@@ -11,8 +11,8 @@ const ConvBar = props => {
           <div className="conv-bar__msg">
               {props.conversations.map(conv=>(
                   <div key={conv.convid} className="cov-bar__msg__container" onClick={()=>props.openConv(conv.convid,{name:conv.name,thumb:conv.image})}>
-
-          <MessageCard  sender={{name:conv.name,thumb:conv.image}}  item={{id:"2",time:"12AM"}} currentUserid={"22"} >
+          
+          <MessageCard className={(props.newMsg?.from?.id)==conv.id?"red":"blue"}  sender={{name:conv.name,thumb:conv.image}}  item={{id:"2",time:"12AM"}} currentUserid={"22"} >
              </MessageCard>
              </div>
               ))}
