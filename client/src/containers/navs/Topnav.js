@@ -40,7 +40,7 @@ class TopNav extends Component {
     this.state = {
       isInFullScreen: false,
       searchKeyword: "",
-      name:user.name||"username"
+      name:user?user.name:"username"||"username"
     };
   }
 

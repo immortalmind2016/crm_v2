@@ -88,6 +88,7 @@ class index extends Component {
 
 
         var userId = e.options[e.selectedIndex].value;
+        this.setState({ own: false,open:false })
 
         axios.post(`${API_BASE_URL}/conv/assign-to`, {
             convId,
