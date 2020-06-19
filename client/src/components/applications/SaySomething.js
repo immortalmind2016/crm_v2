@@ -20,7 +20,7 @@ class SaySomething extends Component {
           disabled = {(open)? "" : "disabled"}
           placeholder={placeholder}
           value={messageInput}
-          style={{padding:"10px"}}
+          style={{paddingLeft:"51px"}}
           onKeyPress={e => handleChatInputPress(e)}
           onChange={e => handleChatInputChange(e)}
         />

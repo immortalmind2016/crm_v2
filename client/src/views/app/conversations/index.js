@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import ConvBar from './ConvBar';
-import {API_BASE_URL} from "../../../constants/defaultValues"
+import { API_BASE_URL } from "../../../constants/defaultValues"
 import PerfectScrollbar from "react-perfect-scrollbar";
-import {connect} from "react-redux"
+import { connect } from "react-redux"
 import axios from "axios"
 import ChatHeading from '../../../components/applications/ChatHeading';
 import MessageCard from '../../../components/applications/MessageCard';
@@ -10,207 +10,209 @@ import SaySomething from "../../../components/applications/SaySomething";
 import io from 'socket.io-client';
 
 class index extends Component {
-    state={
-        conversations:[],
-        messages:[],
-        messageUser:[],
-        pageId:"103718324649806",
-        messageInput:"",
-        convId:"",
-        newMsg:{},
-        shownConvs:[],
-        me:{},
-        open:false,
-        own:true,
-        users:[],
-        anotherUserId:""
-        
+    state = {
+        conversations: [],
+        messages: [],
+        messageUser: [],
+        pageId: "103718324649806",
+        messageInput: "",
+        convId: "",
+        newMsg: {},
+        shownConvs: [],
+        me: {},
+        open: false,
+        own: true,
+        users: [],
+        anotherUserId: ""
+
     }
-    componentDidMount(){
+    componentDidMount() {
         const socket = io('http://localhost:5000/');
-        socket.on("message",(msg)=>{
+        socket.on("message", (msg) => {
             console.log(msg)
             console.log(this.state.messageUser)
-            if(msg.sender.id==this.state.messageUser.id){
+            if (msg.sender.id == this.state.messageUser.id) {
                 console.log("COMPAGE ")
-                this.setState({messages:[...this.state.messages,{message:msg.message.text,from:{id:msg.sender.id}}],newMsg:{message:msg.message.text,from:{id:msg.sender.id}}})
+                this.setState({ messages: [...this.state.messages, { message: msg.message.text, from: { id: msg.sender.id } }], newMsg: { message: msg.message.text, from: { id: msg.sender.id } } })
             }
         })
-        console.log("API BASE ",localStorage.jwtToken)
+        console.log("API BASE ", localStorage.jwtToken)
         axios.defaults.headers.common = { Authorization: `Bearer ${localStorage.jwtToken}` }
 
         axios.get(`${API_BASE_URL}/conv/conversations`)
-        .then((response)=>{
-        
-            const userOne=response.data.convs.conversations[0]
-            console.log(response)
-            if(response.data.convs.conversations.length!=0){
-                this.setState({convId:userOne.convid})
-                
-                this.openConv(userOne.convid,{name:userOne.name,thumb:userOne.image})
-            }
-            
-            this.setState({conversations:response.data.convs.conversations,me:response.data.user,shownConvs:response.data.convs.conversations,users:response.data.users},()=>{
-                if(this.state.me.convs.indexOf(userOne.convid)>-1||userOne.assignedTo==null){
-                    this.setState({open:true})
-                }else if((userOne.assignedTo!=this.state.me._id)||userOne.assignedTo==null){
-                    this.setState({open:false})
+            .then((response) => {
+
+                const userOne = response.data.convs.conversations[0]
+                console.log(response)
+                if (response.data.convs.conversations.length != 0) {
+                    this.setState({ convId: userOne.convid })
+
+                    this.openConv(userOne.convid, { name: userOne.name, thumb: userOne.image })
                 }
-                if((userOne.assignedTo!=this.state.me._id)){
-                    this.setState({own:false})
-                }else{
-                    this.setState({own:true})
-                }
+
+                this.setState({ conversations: response.data.convs.conversations, me: response.data.user, shownConvs: response.data.convs.conversations, users: response.data.users }, () => {
+                    if (this.state.me.convs.indexOf(userOne.convid) > -1 || userOne.assignedTo == null) {
+                        this.setState({ open: true })
+                    } else if ((userOne.assignedTo != this.state.me._id) || userOne.assignedTo == null) {
+                        this.setState({ open: false })
+                    }
+                    if ((userOne.assignedTo != this.state.me._id)) {
+                        this.setState({ own: false })
+                    } else {
+                        this.setState({ own: true })
+                    }
+                })
             })
-        })
-        
+
     }
-    assignToMe=()=>{
-        const convId=this.state.convId
-        axios.post(`${API_BASE_URL}/conv/assign`,{
+    assignToMe = () => {
+        const convId = this.state.convId
+        axios.post(`${API_BASE_URL}/conv/assign`, {
             convId
         })
-        .then((response)=>{
- 
-            console.log(response)
-           
-    
-        })
+            .then((response) => {
+
+                console.log(response)
+
+
+            })
     }
-    assignToUser=()=>{
-        const convId=this.state.convId
+    assignToUser = () => {
+        const convId = this.state.convId
         var e = document.getElementById("users");
-  
 
-       var userId = e.options[e.selectedIndex].value;
 
-        axios.post(`${API_BASE_URL}/conv/assign-to`,{
+        var userId = e.options[e.selectedIndex].value;
+
+        axios.post(`${API_BASE_URL}/conv/assign-to`, {
             convId,
             userId
         })
-        .then((response)=>{
- 
-            console.log(response)
-           
-    
-        })
+            .then((response) => {
+
+                console.log(response)
+
+
+            })
     }
-    componentDidUpdate(prevProps,prevState){
+    componentDidUpdate(prevProps, prevState) {
         if (this._scrollBarRef) {
             this._scrollBarRef._ps.element.scrollTop = this._scrollBarRef._ps.contentHeight;
-          }
+        }
 
-    
-        if(prevState.newMsg!=this.state.newMsg){
+
+        if (prevState.newMsg != this.state.newMsg) {
             console.log("NEW MESG")
 
         }
     }
     handleChatInputPress = e => {
         if (e.key === "Enter") {
-          if (this.state.messageInput.length > 0) {
-     
-              let messages=this.state.messages
-              this.setState({messageInput:"",messages:[...messages,{message:this.state.messageInput,from:{id:this.state.pageId}}],newMsg:{}})
-              axios.post(`${API_BASE_URL}/conv/message/${this.state.messageUser.id}`,{
-                 
-                  message:this.state.messageInput
-              })
-           
+            if (this.state.messageInput.length > 0) {
+
+                let messages = this.state.messages
+                this.setState({ messageInput: "", messages: [...messages, { message: this.state.messageInput, from: { id: this.state.pageId } }], newMsg: {} })
+                axios.post(`${API_BASE_URL}/conv/message/${this.state.messageUser.id}`, {
+
+                    message: this.state.messageInput
+                })
+
+            }
         }
-      }
     }
-    
-      handleChatInputChange = e => {
+
+    handleChatInputChange = e => {
         this.setState({
-            
-          messageInput: e.target.value
+
+            messageInput: e.target.value
         });
-      };
-    
-      handleSendButtonClick = () => {
+    };
+
+    handleSendButtonClick = () => {
         if (this.state.messageInput.length > 0) {
-            let messages=this.state.messages
-            this.setState({messageInput:"",messages:[...messages,{message:this.state.messageInput,from:{id:this.state.pageId}}],newMsg:{}})
-            axios.post(`${API_BASE_URL}/conv/message/${this.state.messageUser.id}`,{
-               
-                message:this.state.messageInput
+            let messages = this.state.messages
+            this.setState({ messageInput: "", messages: [...messages, { message: this.state.messageInput, from: { id: this.state.pageId } }], newMsg: {} })
+            axios.post(`${API_BASE_URL}/conv/message/${this.state.messageUser.id}`, {
+
+                message: this.state.messageInput
             })
         }
-      };
-    openConv=(id,userInfo)=>{
- 
-        try{
-            console.log(this.state.me,id,"CHECKCOUT")
-           if((userInfo.assignedTo!=this.state.me._id)){
-                this.setState({own:false})
-            }else{
-                this.setState({own:true})
+    };
+    openConv = (id, userInfo) => {
+
+        try {
+            console.log(this.state.me, id, "CHECKCOUT")
+            if ((userInfo.assignedTo != this.state.me._id)) {
+                this.setState({ own: false })
+            } else {
+                this.setState({ own: true })
             }
-            if(this.state.me.convs.indexOf(id)>-1||userInfo.assignedTo==null){
-                this.setState({open:true})
-            }else if((userInfo.assignedTo!=this.state.me._id)){
-                this.setState({open:false})
+            if (this.state.me.convs.indexOf(id) > -1 || userInfo.assignedTo == null) {
+                this.setState({ open: true })
+            } else if ((userInfo.assignedTo != this.state.me._id)) {
+                this.setState({ open: false })
             }
-        }catch(e){
-            console.log("EE ",e)
+        } catch (e) {
+            console.log("EE ", e)
         }
-     
+
         axios.get(`${API_BASE_URL}/conv/messages/${id}`)
-        .then((response)=>{
-            console.log(response)
-          
-            this.setState({messages:response.data.messages,messageUser:{...userInfo,id:response.data.messages[0].from.id},convId:id})
-        })
-    }
-    toggleAppMenu=(data)=>{
-        if(data=="messages"){
-            this.setState({shownConvs:this.state.conversations})
+            .then((response) => {
+                console.log(response)
 
-        }else{
-            this.setState({shownConvs:this.state.conversations.filter((conv)=>conv.assignedTo==this.state.me._id)})
+                this.setState({ messages: response.data.messages, messageUser: { ...userInfo, id: response.data.messages[0].from.id }, convId: id })
+            })
+    }
+    toggleAppMenu = (data) => {
+        if (data == "messages") {
+            this.setState({ shownConvs: this.state.conversations })
+
+        } else {
+            this.setState({ shownConvs: this.state.conversations.filter((conv) => conv.assignedTo == this.state.me._id) })
 
         }
-console.log(data)
+        console.log(data)
     }
     render() {
         return (
             <div className="conversations">
-               <div className="row">
-                   <div className="col-lg-9 col-sm-12">
-                       <div className="messages-div chat-app">
-                           <ChatHeading name={this.state.messageUser.name} thumb={this.state.messageUser.thumb} lastSeenDate="24">
-       
-                        
-                               </ChatHeading> 
-                               <div style={{marginTop:"-94px",marginBottom:"109px"}}>
-                      {this.state.open&&<React.Fragment>
-                       {!this.state.own&& <div onClick={this.assignToMe}  className="btn btn-primary float-right ml-2">Assign to me</div>}
-                           <div  className="btn btn-primary float-right" type="button"  data-toggle="modal" data-target="#exampleModal">Assign to friend</div></React.Fragment>}
-     </div>
-                        
-                           <PerfectScrollbar
-                ref={ref => {
-                  this._scrollBarRef = ref;
-                }}
-                containerRef={ref => { }}
-                options={{ suppressScrollX: true, wheelPropagation: false }}>
-                    {this.state.messages.map((msg)=>(
-                            msg.from.id==this.state.pageId?<MessageCard  sender={{name:msg.message,thumb:"https://scontent-mxp1-1.xx.fbcdn.net/v/t1.0-9/p960x960/93245412_103718371316468_4553994935375757312_o.png?_nc_cat=107&_nc_sid=85a577&_nc_ohc=apfxHdnatqAAX-KvCym&_nc_ht=scontent-mxp1-1.xx&oh=fe4340f6a05032707b1c07d3f59b91cb&oe=5F094A40"}} item={{time:null,sender:"1"}} currentUserid={"2"}>
-                   
-                            </MessageCard>:
-                               <MessageCard  sender={{name:msg.message,thumb:this.state.messageUser.thumb}} item={{time:null,sender:"1"}} currentUserid={"1"}>
-                   
-                               </MessageCard>
+                <div className="row">
+                    <div className="col-lg-9 col-sm-12" style={{position:"relative",borderRight:"1px solid #d7d7d7"}}>
+                        <div className="messages-div chat-app">
+                            <ChatHeading name={this.state.messageUser.name} thumb={this.state.messageUser.thumb} lastSeenDate="24">
 
 
-                    ))}
-                   
-                 
-                  
-                    
-                   </PerfectScrollbar>
-                   <SaySomething
+                            </ChatHeading>
+                            <div style={{ marginTop: "-94px", marginBottom: "109px" }}>
+                                {this.state.open && <React.Fragment>
+                                    {!this.state.own && <div onClick={this.assignToMe} className="btn btn-primary float-right ml-2">Assign to me</div>}
+                                    <div className="btn btn-primary float-right" type="button" data-toggle="modal" data-target="#exampleModal">Assign to friend</div></React.Fragment>}
+                            </div>
+
+                            <PerfectScrollbar
+                                ref={ref => {
+                                    this._scrollBarRef = ref;
+                                }}
+                                containerRef={ref => { }}
+                                options={{ suppressScrollX: true, wheelPropagation: false }}>
+                                {this.state.messages.map((msg) => (
+                                    msg.from.id == this.state.pageId ? <MessageCard sender={{ name: msg.message, thumb: "https://scontent-mxp1-1.xx.fbcdn.net/v/t1.0-9/p960x960/93245412_103718371316468_4553994935375757312_o.png?_nc_cat=107&_nc_sid=85a577&_nc_ohc=apfxHdnatqAAX-KvCym&_nc_ht=scontent-mxp1-1.xx&oh=fe4340f6a05032707b1c07d3f59b91cb&oe=5F094A40" }} item={{ time: null, sender: "1" }} currentUserid={"2"}>
+
+                                    </MessageCard> :
+                                        <MessageCard sender={{ name: msg.message, thumb: this.state.messageUser.thumb }} item={{ time: null, sender: "1" }} currentUserid={"1"}>
+
+                                        </MessageCard>
+
+
+                                ))}
+
+
+
+
+                            </PerfectScrollbar>
+
+                        </div>
+                        <SaySomething
         open={this.state.open}
           placeholder={"write..."}
           messageInput={this.state.messageInput}
@@ -219,50 +221,48 @@ console.log(data)
           handleSendButtonClick={this.handleSendButtonClick}
 
         />
-                       </div>
+                    </div>
+                    <div className="col-lg-3 col-sm-12">
 
-                   </div>
-                   <div className="col-lg-3 col-sm-12">
-                      
-                   <ConvBar toggleAppMenu={this.toggleAppMenu} newMsg={this.state.newMsg}  openConv={this.openConv} conversations={this.state.shownConvs}>
+                        <ConvBar toggleAppMenu={this.toggleAppMenu} newMsg={this.state.newMsg} openConv={this.openConv} conversations={this.state.shownConvs}>
 
 
 
-                   </ConvBar>
-                   </div>
-               </div>
+                        </ConvBar>
+                    </div>
+                </div>
 
-      
-               <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div className="form-group">
-            <select className="form-control" id="users">
-               {this.state.users.map((user)=>{
-                   return <option value={user._id}>{user.name}</option>
-               })}
-            </select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onClick={this.assignToUser}>Assign</button>
-      </div>
-    </div>
-  </div>
-</div>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div className="form-group">
+                                    <select className="form-control" id="users">
+                                        {this.state.users.map((user) => {
+                                            return <option value={user._id}>{user.name}</option>
+                                        })}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onClick={this.assignToUser}>Assign</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
 }
-const mapStateToProps=(state)=>({
-    user:state.authUser
+const mapStateToProps = (state) => ({
+    user: state.authUser
 })
-export default connect(mapStateToProps,undefined)(index);
+export default connect(mapStateToProps, undefined)(index);
