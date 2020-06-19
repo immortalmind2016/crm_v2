@@ -1,5 +1,5 @@
 import {ACCESS_TOKEN, API_BASE_URL} from "../../constants/defaultValues"
-import {SET_CURRENT_USER} from '../actions'
+import {SET_CURRENT_USER,SET_CURRENT_DATA} from '../actions'
 import {request} from "../utils"
 
 export function getCurrentUser() {
@@ -14,10 +14,11 @@ export function getCurrentUser() {
 }
 
 export function login(loginRequest) {
+    console.log("lOGIN")
     return request({
         url: API_BASE_URL + "/auth/login",
         method: 'POST',
-        body: JSON.stringify(loginRequest)
+        body: JSON.stringify({...loginRequest})
     });
 }
 
@@ -51,8 +52,16 @@ export function password_change(resetToken, newPassword) {
 
 
 export const setCurrentUser = decoded => {
+    
     return {
       type: SET_CURRENT_USER,
       payload: decoded
+    };
+  };
+  export const setCurrentDataUser = payload => {
+      console.log("SET CURRENT DATA")
+    return {
+      type: SET_CURRENT_DATA,
+      payload
     };
   };

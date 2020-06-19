@@ -17,6 +17,7 @@ import OAuth2RedirectHandler from './views/user/OAuth2RedirectHandler';
 import { configureStore } from './redux/store';
 import {setCurrentUser} from './redux/auth/auth';
 import {logout} from './redux/auth/saga';
+import { Provider } from 'react-redux';
 
 import * as jwt_decode from 'jwt-decode'
 
@@ -107,7 +108,8 @@ class App extends Component {
 
     return (
       <div className="h-100">
-        <IntlProvider
+        <Provider
+        store={store}
           locale={currentAppLocale.locale}
           messages={currentAppLocale.messages}
         >
@@ -147,7 +149,7 @@ class App extends Component {
               </Router>
             </Suspense>
           </React.Fragment>
-        </IntlProvider>
+        </Provider>
       </div>
     );
   }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ConvBar from './ConvBar';
 import {API_BASE_URL} from "../../../constants/defaultValues"
 import PerfectScrollbar from "react-perfect-scrollbar";
-
+import {connect} from "react-redux"
 import axios from "axios"
 import ChatHeading from '../../../components/applications/ChatHeading';
 import MessageCard from '../../../components/applications/MessageCard';
@@ -17,7 +17,14 @@ class index extends Component {
         pageId:"103718324649806",
         messageInput:"",
         convId:"",
-        newMsg:{}
+        newMsg:{},
+        shownConvs:[],
+        me:{},
+        open:false,
+        own:true,
+        users:[],
+        anotherUserId:""
+        
     }
     componentDidMount(){
         const socket = io('http://localhost:5000/');
@@ -29,18 +36,64 @@ class index extends Component {
                 this.setState({messages:[...this.state.messages,{message:msg.message.text,from:{id:msg.sender.id}}],newMsg:{message:msg.message.text,from:{id:msg.sender.id}}})
             }
         })
-        console.log("API BASE ",API_BASE_URL)
+        console.log("API BASE ",localStorage.jwtToken)
+        axios.defaults.headers.common = { Authorization: `Bearer ${localStorage.jwtToken}` }
+
         axios.get(`${API_BASE_URL}/conv/conversations`)
         .then((response)=>{
+        
             const userOne=response.data.convs.conversations[0]
             console.log(response)
             if(response.data.convs.conversations.length!=0){
                 this.setState({convId:userOne.convid})
+                
                 this.openConv(userOne.convid,{name:userOne.name,thumb:userOne.image})
             }
-            this.setState({conversations:response.data.convs.conversations})
+            
+            this.setState({conversations:response.data.convs.conversations,me:response.data.user,shownConvs:response.data.convs.conversations,users:response.data.users},()=>{
+                if(this.state.me.convs.indexOf(userOne.convid)>-1||userOne.assignedTo==null){
+                    this.setState({open:true})
+                }else if((userOne.assignedTo!=this.state.me._id)||userOne.assignedTo==null){
+                    this.setState({open:false})
+                }
+                if((userOne.assignedTo!=this.state.me._id)){
+                    this.setState({own:false})
+                }else{
+                    this.setState({own:true})
+                }
+            })
         })
         
+    }
+    assignToMe=()=>{
+        const convId=this.state.convId
+        axios.post(`${API_BASE_URL}/conv/assign`,{
+            convId
+        })
+        .then((response)=>{
+ 
+            console.log(response)
+           
+    
+        })
+    }
+    assignToUser=()=>{
+        const convId=this.state.convId
+        var e = document.getElementById("users");
+  
+
+       var userId = e.options[e.selectedIndex].value;
+
+        axios.post(`${API_BASE_URL}/conv/assign-to`,{
+            convId,
+            userId
+        })
+        .then((response)=>{
+ 
+            console.log(response)
+           
+    
+        })
     }
     componentDidUpdate(prevProps,prevState){
         if (this._scrollBarRef) {
@@ -86,21 +139,56 @@ class index extends Component {
         }
       };
     openConv=(id,userInfo)=>{
-        console.log("IDDDDDDD ",id)
-
+ 
+        try{
+            console.log(this.state.me,id,"CHECKCOUT")
+           if((userInfo.assignedTo!=this.state.me._id)){
+                this.setState({own:false})
+            }else{
+                this.setState({own:true})
+            }
+            if(this.state.me.convs.indexOf(id)>-1||userInfo.assignedTo==null){
+                this.setState({open:true})
+            }else if((userInfo.assignedTo!=this.state.me._id)){
+                this.setState({open:false})
+            }
+        }catch(e){
+            console.log("EE ",e)
+        }
+     
         axios.get(`${API_BASE_URL}/conv/messages/${id}`)
         .then((response)=>{
             console.log(response)
+          
             this.setState({messages:response.data.messages,messageUser:{...userInfo,id:response.data.messages[0].from.id},convId:id})
         })
+    }
+    toggleAppMenu=(data)=>{
+        if(data=="messages"){
+            this.setState({shownConvs:this.state.conversations})
+
+        }else{
+            this.setState({shownConvs:this.state.conversations.filter((conv)=>conv.assignedTo==this.state.me._id)})
+
+        }
+console.log(data)
     }
     render() {
         return (
             <div className="conversations">
                <div className="row">
-                   <div className="col-lg-10 col-sm-12">
+                   <div className="col-lg-9 col-sm-12">
                        <div className="messages-div chat-app">
-                           <ChatHeading name={this.state.messageUser.name} thumb={this.state.messageUser.thumb} lastSeenDate="24"></ChatHeading>
+                           <ChatHeading name={this.state.messageUser.name} thumb={this.state.messageUser.thumb} lastSeenDate="24">
+       
+                        
+                               </ChatHeading> 
+                               <div style={{marginTop:"-94px",marginBottom:"109px"}}>
+                      {this.state.open&&<React.Fragment>
+                       {!this.state.own&& <div onClick={this.assignToMe}  className="btn btn-primary float-right ml-2">Assign to me</div>}
+                           <div  className="btn btn-primary float-right" type="button"  data-toggle="modal" data-target="#exampleModal">Assign to friend</div></React.Fragment>}
+     </div>
+                        
                            <PerfectScrollbar
                 ref={ref => {
                   this._scrollBarRef = ref;
@@ -123,6 +211,7 @@ class index extends Component {
                     
                    </PerfectScrollbar>
                    <SaySomething
+        open={this.state.open}
           placeholder={"write..."}
           messageInput={this.state.messageInput}
           handleChatInputPress={this.handleChatInputPress}
@@ -133,14 +222,47 @@ class index extends Component {
                        </div>
 
                    </div>
-                   <div className="col-lg-2 col-sm-12">
+                   <div className="col-lg-3 col-sm-12">
                       
-                   <ConvBar newMsg={this.state.newMsg} openConv={this.openConv} conversations={this.state.conversations}></ConvBar>
+                   <ConvBar toggleAppMenu={this.toggleAppMenu} newMsg={this.state.newMsg}  openConv={this.openConv} conversations={this.state.shownConvs}>
+
+
+
+                   </ConvBar>
                    </div>
                </div>
+
+      
+               <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div className="form-group">
+            <select className="form-control" id="users">
+               {this.state.users.map((user)=>{
+                   return <option value={user._id}>{user.name}</option>
+               })}
+            </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onClick={this.assignToUser}>Assign</button>
+      </div>
+    </div>
+  </div>
+</div>
             </div>
         );
     }
 }
-
-export default index;
+const mapStateToProps=(state)=>({
+    user:state.authUser
+})
+export default connect(mapStateToProps,undefined)(index);

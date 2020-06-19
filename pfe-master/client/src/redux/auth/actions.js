@@ -11,7 +11,8 @@ import {
   FORGOT_PASSWORD_ERROR,
   RESET_PASSWORD,
   RESET_PASSWORD_SUCCESS,
-  RESET_PASSWORD_ERROR
+  RESET_PASSWORD_ERROR,
+  SET_CURRENT_DATA
 } from '../actions';
 
 export const loginUser = (user, history) => ({

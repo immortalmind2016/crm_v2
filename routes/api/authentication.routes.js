@@ -72,14 +72,34 @@ router.post("/register", (req, res, next) => {
 router.post("/login", (req, res, next) => {
 
   // Form validation
-  const { errors, isValid } = validateLoginInput(req.body);
+ // const { errors, isValid } = validateLoginInput(req.body);
 
   // Check validation
-  if (!isValid) {
+  /*if (!isValid) {
     return res.status(400).json(errors);
-  }
+  }*/
   var user = req.body;
-  passport.authenticate('local', {
+  console.log("USER ",user)
+  User.findOne({email:user.email},(err,user)=>{
+
+    if(!user){
+      return res.status(200).json({
+        "message": "not found"
+      });
+    }
+    else{
+      const token = user.generateJWT();
+      return res.status(200).json({
+        "jwtToken": token,
+        "email": user.email,
+        "name": user.name,
+        "role": user.role,
+   
+        
+      });
+    }
+  })
+ /* passport.authenticate('local', {
     usernameField: 'email',
     passwordField: 'password'
   },
@@ -96,13 +116,15 @@ router.post("/login", (req, res, next) => {
           "email": user.email,
           "name": user.name,
           "role": user.role,
+     
+          
         });
       } else {
         res.status(200).json({
           "message": err
         });
       }
-    })(req, res, next)
+    })(req, res, next)*/
 });
 
 router.post("/forgot_password", async (req, res, next) => {

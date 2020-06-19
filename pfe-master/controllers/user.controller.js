@@ -12,7 +12,9 @@ async function sendUpdatedCredsMail(name, pass, mail){
     
       await mailer.sendMail(resetEmail);
 }
-
+exports.getMe=(req,res)=>{
+  return  res.json({user:req.user})
+}
 exports.create = async (req, res) => {
     if(req.user.role !== "admin"){
         return res.status(401);

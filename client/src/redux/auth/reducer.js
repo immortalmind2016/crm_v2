@@ -12,7 +12,8 @@ import {
     RESET_PASSWORD,
     RESET_PASSWORD_SUCCESS,
     RESET_PASSWORD_ERROR,
-    SET_CURRENT_USER
+    SET_CURRENT_USER,
+    SET_CURRENT_DATA
 } from '../actions';
 
 const isEmpty = require("is-empty");
@@ -30,9 +31,14 @@ export default (state = INIT_STATE, action) => {
 
     switch (action.type) {
         case LOGIN_USER:
-            return { ...state, loading: true, error: '' };
+            console.log("LOGIN IUSER")
+          //    console.log(action.payload ,'PAYYYYYYYYLOAAD' ,action.payload.user)
+            return { ...state, loading: true, user:"HHHHHHH", error: '' };
+        case SET_CURRENT_DATA:
+       return { ...state, loading: true, user:"HHHHHHH", error: '' };
         case LOGIN_USER_SUCCESS:
-            return { ...state, loading: false, user: action.payload/*.jwtToken*/, error: '' };
+            console.log(action.payload ,'PAYYYYYYYYLOAAD' ,action.payload.user)
+            return { ...state, loading: false/*.jwtToken*/,user:"DLOL", error: '' };
         case LOGIN_USER_ERROR:
             return { ...state, loading: false, user: '', error: action.payload.message };
         case SET_CURRENT_USER:

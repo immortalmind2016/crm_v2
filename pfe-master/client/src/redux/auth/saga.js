@@ -49,11 +49,11 @@ function* loginWithEmailPassword({ payload }) {
         // Hard coded values smell. But this should do it. 
         
         if (!loginUser.message) {
-            localStorage.setItem(ACCESS_TOKEN, loginUser.jwtToken);
+          /*  localStorage.setItem(ACCESS_TOKEN, loginUser.jwtToken);
             yield put(loginUserSuccess(loginUser.jwtToken));
             localStorage.setItem("role", loginUser.role);
             localStorage.setItem("email", loginUser.email);
-            localStorage.setItem("name", loginUser.name);
+            localStorage.setItem("name", loginUser.name);*/
             history.push('/');
         } else {
             yield put(loginUserError(loginUser.message));

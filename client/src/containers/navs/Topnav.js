@@ -36,10 +36,11 @@ import { getDirection, setDirection } from "../../helpers/Utils";
 class TopNav extends Component {
   constructor(props) {
     super(props);
-
+    const user=JSON.parse(localStorage.getItem("user"))
     this.state = {
       isInFullScreen: false,
-      searchKeyword: ""
+      searchKeyword: "",
+      name:user.name||"username"
     };
   }
 
@@ -291,9 +292,9 @@ class TopNav extends Component {
           <div className="user d-inline-block">
             <UncontrolledDropdown className="dropdown-menu-right">
               <DropdownToggle className="p-0" color="empty">
-                <span className="name mr-1">Sarah Kortney</span>
+                <span className="name mr-1">{this.state.name}</span>
                 <span>
-                  <img alt="Profile" src="/assets/img/profile-pic-l.jpg" />
+                  <img alt="Profile" src="https://scontent-mxp1-1.xx.fbcdn.net/v/t1.0-9/p960x960/93245412_103718371316468_4553994935375757312_o.png?_nc_cat=107&_nc_sid=85a577&_nc_ohc=apfxHdnatqAAX-KvCym&_nc_ht=scontent-mxp1-1.xx&oh=fe4340f6a05032707b1c07d3f59b91cb&oe=5F094A40" />
                 </span>
               </DropdownToggle>
               <DropdownMenu className="mt-3" right>

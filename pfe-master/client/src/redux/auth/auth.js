@@ -1,5 +1,5 @@
 import {ACCESS_TOKEN, API_BASE_URL} from "../../constants/defaultValues"
-import {SET_CURRENT_USER} from '../actions'
+import {SET_CURRENT_USER,SET_CURRENT_DATA} from '../actions'
 import {request} from "../utils"
 
 export function getCurrentUser() {
@@ -49,7 +49,12 @@ export function password_change(resetToken, newPassword) {
     });
 }
 
-
+export const setCurrentDataUser = payload => {
+    return {
+      type: SET_CURRENT_DATA,
+      payload
+    };
+  };
 export const setCurrentUser = decoded => {
     return {
       type: SET_CURRENT_USER,

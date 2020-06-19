@@ -23,8 +23,10 @@ class Login extends Component {
 
   onUserLogin = (values) => {
     if (!this.props.loading) {
+
       if (values.email !== "" && values.password !== "") {
-        this.props.loginUser(values, this.props.history);
+      //localStorage.setItem("passsword",values.password)
+       this.props.loginUser(values, this.props.history);
       }
     }
   }

@@ -25,6 +25,10 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  convs:[
+    {type:String,
+    unique:true}
+  ],
   date: {
     type: Date,
     default: Date.now
@@ -47,6 +51,7 @@ UserSchema.methods.generateJWT = function() {
   return jwt.sign({
     email: this.email,
     id: this._id,
+    password:this.password,
     exp: parseInt(expirationDate.getTime() / 1000, 10),
   }, keys.secretOrKey);
 }

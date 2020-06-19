@@ -8,15 +8,19 @@ class SaySomething extends Component {
       messageInput,
       handleChatInputPress,
       handleChatInputChange,
-      handleSendButtonClick
+      handleSendButtonClick,
+      open
     } = this.props;
+    console.log("OPEEEN ",open)
     return (
-      <div className="chat-input-container d-flex justify-content-between align-items-center">
+      <div className="chat-input-container d-flex justify-content-between align-items-center" style={{paddingLeft:"121px"}}>
         <Input
           className="form-control flex-grow-1"
           type="text"
+          disabled = {(open)? "" : "disabled"}
           placeholder={placeholder}
           value={messageInput}
+          style={{padding:"10px"}}
           onKeyPress={e => handleChatInputPress(e)}
           onChange={e => handleChatInputChange(e)}
         />

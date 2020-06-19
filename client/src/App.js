@@ -15,7 +15,8 @@ import { isMultiColorActive, isDemo, ACCESS_TOKEN } from './constants/defaultVal
 import { getDirection } from './helpers/Utils';
 import OAuth2RedirectHandler from './views/user/OAuth2RedirectHandler';
 import { configureStore } from './redux/store';
-import {setCurrentUser} from './redux/auth/auth';
+import {setCurrentUser,getCurrentUser,setCurrentDataUser} from './redux/auth/auth';
+import {loginUser} from './redux/auth/actions';
 import {logout} from './redux/auth/saga';
 
 import * as jwt_decode from 'jwt-decode'
@@ -48,9 +49,19 @@ if (!isEmpty(localStorage.jwtToken)) {
     const store = configureStore();
     const decoded = jwt_decode(localStorage.jwtToken);
     // Set user and isAuthenticated
-    store.dispatch(setCurrentUser(decoded));
+    console.log("DECODE ",decoded)
+  
     // Check for expired token
     const currentTime = Date.now() / 1000; // to get in milliseconds
+    getCurrentUser().then((response)=>{
+      console.log(response ,"GET CURRENT XXX")
+      localStorage.setItem("user",JSON.stringify(response.user))
+    })
+ 
+
+      store.dispatch(setCurrentUser(decoded));
+
+    console.log("HERE")
     if (decoded.exp < currentTime) {
     // Logout user
     //store.dispatch(logout());
@@ -58,8 +69,10 @@ if (!isEmpty(localStorage.jwtToken)) {
     // Redirect to login
     window.location.href = "./login";
     }
+   
   }
   catch(err) {
+    console.log("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRORR")
     localStorage.removeItem(ACCESS_TOKEN);
   }
   

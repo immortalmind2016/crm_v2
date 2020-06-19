@@ -12,7 +12,7 @@ Table of Contents
 const EnLang = {
   /* 01.General */
   "general.copyright": "Gogo React © 2018 All Rights Reserved.",
-
+  "chat.messages":"messages",
   /* 02.User Login, Logout, Register */
   "user.login-title": "Login",
   "user.register": "Register",

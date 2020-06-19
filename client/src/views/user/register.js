@@ -14,10 +14,11 @@ import { GOOGLE_AUTH_URL } from '../../constants/defaultValues'
 class Register extends Component {
   constructor(props) {
     super(props);
+    const user=JSON.parse(localStorage.getItem("user"))
     this.state = {
       email: "demo@gogo.com",
       password: "gogo123",
-      name: "Sarah Kortney"
+      name:user.name||"username"
     };
   }
   onUserRegister = (values) => {

@@ -167,7 +167,9 @@ exports.update = async (req, res) => {
         })
     });
 };
-
+exports.getMe=(req,res)=>{
+    res.json({user:req.user})
+}
 exports.delete = (req, res) => {
     User.findByIdAndRemove(req.params.id)
     .then(user => {

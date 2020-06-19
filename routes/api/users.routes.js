@@ -13,6 +13,7 @@ function isAdmin(req, res, next) {
 router.get('/paginate/', passport.authenticate('jwt', { session: false }), usersController.paginate);
 router.post('/', passport.authenticate('jwt', { session: false }),  usersController.create);
 router.get('/', passport.authenticate('jwt', { session: false }), usersController.findAll);
+router.get('/me', passport.authenticate('jwt', { session: false }), usersController.getMe);
 router.get('/:id', passport.authenticate('jwt', { session: false }), usersController.findOne);
 router.put('/:id', passport.authenticate('jwt', { session: false }), usersController.update);
 router.delete('/:id', passport.authenticate('jwt', { session: false }), usersController.delete);

@@ -2,9 +2,9 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const {readConversations,readMessages,sendMessage,postWebhook,getWebhook} = require('../../controllers/conversation.controller.js');
+const {readConversations,readMessages,sendMessage,postWebhook,getWebhook,assignConv,assignConvUser} = require('../../controllers/conversation.controller.js');
 module.exports=(io)=>{
-    router.get('/conversations/',readConversations);
+    router.get('/conversations/',passport.authenticate('jwt', { session: false }),readConversations);
 
 router.get('/messages/:convId',readMessages);
 
@@ -17,6 +17,9 @@ router.post("/webhook",(req,res,next)=>{
     next()
 },postWebhook)
 router.get("/webhook",getWebhook)
+router.post("/assign",passport.authenticate('jwt', { session: false }),assignConv)
+router.post("/assign-to",passport.authenticate('jwt', { session: false }),assignConvUser)
+
 //router.use(isAdmin())
 
     return router

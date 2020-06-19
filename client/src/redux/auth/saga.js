@@ -1,7 +1,7 @@
 
 import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
 //import { auth } from '../../helpers/Firebase';
-import { login, signup, password_reset, password_change } from "./auth"
+import { login, signup, password_reset, password_change ,getCurrentUser} from "./auth"
 
 import { ACCESS_TOKEN } from '../../constants/defaultValues'
 
@@ -45,20 +45,24 @@ function* loginWithEmailPassword({ payload }) {
         const loginUser = yield call(login , { 
             "email": email, 
             "password": password
+         
         }) 
         // Hard coded values smell. But this should do it. 
-        
+     
+
         if (!loginUser.message) {
-            localStorage.setItem(ACCESS_TOKEN, loginUser.jwtToken);
+    localStorage.setItem(ACCESS_TOKEN, loginUser.jwtToken);
             yield put(loginUserSuccess(loginUser.jwtToken));
             localStorage.setItem("role", loginUser.role);
             localStorage.setItem("email", loginUser.email);
             localStorage.setItem("name", loginUser.name);
+            localStorage.setItem("password",loginUser.password)
             history.push('/');
         } else {
             yield put(loginUserError(loginUser.message));
         }
     } catch (error) {
+
         yield put(loginUserError(error));
 
     }

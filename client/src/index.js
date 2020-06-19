@@ -1,5 +1,9 @@
 import "./assets/css/vendor/bootstrap.min.css";
 import "./assets/css/vendor/bootstrap.rtl.only.min.css";
+
+import 'jquery/dist/jquery.min.js'
+import 'bootstrap/dist/js/bootstrap.min.js'
+
 import "react-circular-progressbar/dist/styles.css";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
