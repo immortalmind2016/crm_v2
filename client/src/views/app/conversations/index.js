@@ -163,9 +163,9 @@ class index extends Component {
 
         axios.get(`${API_BASE_URL}/conv/messages/${id}`)
             .then((response) => {
-                console.log(response)
+                console.log(response ,"REPONSEEEEEEEEEEE")
 
-                this.setState({ messages: response.data.messages, messageUser: { ...userInfo, id: response.data.messages[0].from.id }, convId: id })
+                this.setState({ messages: response.data.messages, messageUser: { ...userInfo, id: response.data.messages[0].from.id==this.state.pageId?response.data.messages[0].to.data[0].id:response.data.messages[0].from.id }, convId: id })
             })
     }
     toggleAppMenu = (data) => {

@@ -57,7 +57,7 @@ const readConversations=async(req,res,err)=>{
 }
 const readMessages=(req,res,err)=>{
     const {convId}=req.params
-    axios.get(`${FACEBOOK}${convId}/messages?access_token=${TEST_ACCESS}&fields=message,from`).then((response)=>{
+    axios.get(`${FACEBOOK}${convId}/messages?access_token=${TEST_ACCESS}&fields=message,from,to`).then((response)=>{
         return res.json({messages:response.data.data.reverse()})
     }).catch((e)=>{
        // console.log(e.response.data)
@@ -71,6 +71,7 @@ const readMoreMessages=(req,res,err)=>{
 }
 const sendMessage=async (req,res,err)=>{
     const {recId}=req.params
+    console.log(recId)
    try{
     await axios.post(`${FACEBOOK}me/messages?access_token=${TEST_ACCESS}`,{
         "messaging_type": "MESSAGE_TAG",
@@ -83,7 +84,7 @@ const sendMessage=async (req,res,err)=>{
         }
       })
    }catch(e){
-     //  console.log(e.response.data)
+      console.log(e.response.data)
    }
      res.json({success:true})
  
