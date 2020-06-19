@@ -23,6 +23,7 @@ class index extends Component {
         open: false,
         own: true,
         users: [],
+        ring:false,
         anotherUserId: ""
 
     }
@@ -30,10 +31,14 @@ class index extends Component {
         const socket = io('http://localhost:5000/');
         socket.on("message", (msg) => {
             console.log(msg)
+
             console.log(this.state.messageUser)
             if (msg.sender.id == this.state.messageUser.id) {
                 console.log("COMPAGE ")
-                this.setState({ messages: [...this.state.messages, { message: msg.message.text, from: { id: msg.sender.id } }], newMsg: { message: msg.message.text, from: { id: msg.sender.id } } })
+                setTimeout(()=>{
+                    this.setState({ring:false})
+                },1000)
+                this.setState({ring:true, messages: [...this.state.messages, { message: msg.message.text, from: { id: msg.sender.id } }], newMsg: { message: msg.message.text, from: { id: msg.sender.id } } })
             }
         })
         console.log("API BASE ", localStorage.jwtToken)
@@ -176,6 +181,11 @@ class index extends Component {
     render() {
         return (
             <div className="conversations">
+   {this.state.ring&&             <audio autoPlay>
+
+<source src="/assets/ring/juntos.mp3" type="audio/mpeg"/>
+Your browser does not support the audio element.
+</audio>}
                 <div className="row">
                     <div className="col-lg-9 col-sm-12" style={{position:"relative",borderRight:"1px solid #d7d7d7"}}>
                         <div className="messages-div chat-app">
