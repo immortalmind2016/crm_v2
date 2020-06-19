@@ -94,7 +94,7 @@ class index extends Component {
             userId
         })
             .then((response) => {
-
+           
                 console.log(response)
 
 
@@ -263,7 +263,7 @@ Your browser does not support the audio element.
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onClick={this.assignToUser}>Assign</button>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal onClick={this.assignToUser}>Assign</button>
                             </div>
                         </div>
                     </div>
