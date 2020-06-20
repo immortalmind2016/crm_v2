@@ -8,13 +8,14 @@ import ChatHeading from '../../../components/applications/ChatHeading';
 import MessageCard from '../../../components/applications/MessageCard';
 import SaySomething from "../../../components/applications/SaySomething";
 import io from 'socket.io-client';
+import {PAGE_ID} from "../../../constants/defaultValues"
 import moment from "moment"
 class index extends Component {
     state = {
         conversations: [],
         messages: [],
         messageUser: [],
-        pageId: "103718324649806",
+        pageId: PAGE_ID,
         messageInput: "",
         convId: "",
         newMsg: {},

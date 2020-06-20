@@ -1,8 +1,9 @@
 const axios=require('axios')
 const {FACEBOOK}=require("../config/url")
-const {TEST_ACCESS}=require("../config/keys")
+const {TEST_ACCESS,PAGE_ID}=require("../config/keys")
 const User = require("../models/User")
 const mongoose=require("mongoose")
+
 const requestUrl=(PSID,access_token)=>(`/${PSID}?fields=first_name,last_name,profile_pic&access_token=${access_token}`)
 
 const getUsersImage=async (response)=>{
@@ -25,7 +26,7 @@ const getUsersImage=async (response)=>{
     })
 }
 const readConversations=async(req,res,err)=>{
-    const response=await axios.get(`${FACEBOOK}103718324649806/conversations?access_token=${TEST_ACCESS}&fields=senders,updated_time`)
+    const response=await axios.get(`${FACEBOOK}${PAGE_ID}/conversations?access_token=${TEST_ACCESS}&fields=senders,updated_time`)
     const profilesData=await getUsersImage(response)
     let conversations_=response.data.data.map((data,index)=>({convid:data.id,...data.senders.data[0],updated_time:data.updated_time,image:profilesData[index].profile_pic,assignedTo:null}))
     const conversations={conversations:conversations_,paging:response.data.paging}
