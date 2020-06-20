@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import MessageCard from "../../../components/applications/MessageCard"
 import classnames from "classnames";
 import IntlMessages from "../../../helpers/IntlMessages";
-
+import moment from "moment"
 const ConvBar = props => {
     console.log(props.newMsg , "PROPS MSG")
     return (
@@ -47,9 +47,9 @@ const ConvBar = props => {
            </div>
           <div className="conv-bar__msg">
               {props.conversations.map(conv=>(
-                  <div key={conv.convid} className="cov-bar__msg__container" onClick={()=>props.openConv(conv.convid,{name:conv.name,thumb:conv.image,assignedTo:conv.assignedTo})}>
+                  <div key={conv.convid} className="cov-bar__msg__container" onClick={()=>props.openConv(conv.convid,{name:conv.name,thumb:conv.image,assignedTo:conv.assignedTo,updated_time:conv.updated_time})}>
           
-          <MessageCard className={(props.newMsg?.from?.id)==conv.id?"red":"blue"}  sender={{name:conv.name,thumb:conv.image}}  item={{id:"2",time:"12AM"}} currentUserid={"22"} >
+          <MessageCard className={(props.newMsg?.from?.id)==conv.id?"red":"blue"}  sender={{name:conv.name,thumb:conv.image}}  item={{id:"2",time:moment(conv.updated_time).fromNow()}} currentUserid={"22"} >
            
              </MessageCard>
              </div>

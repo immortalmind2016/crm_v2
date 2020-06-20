@@ -25,9 +25,9 @@ const getUsersImage=async (response)=>{
     })
 }
 const readConversations=async(req,res,err)=>{
-    const response=await axios.get(`${FACEBOOK}103718324649806/conversations?access_token=${TEST_ACCESS}&fields=senders`)
+    const response=await axios.get(`${FACEBOOK}103718324649806/conversations?access_token=${TEST_ACCESS}&fields=senders,updated_time`)
     const profilesData=await getUsersImage(response)
-    let conversations_=response.data.data.map((data,index)=>({convid:data.id,...data.senders.data[0],image:profilesData[index].profile_pic,assignedTo:null}))
+    let conversations_=response.data.data.map((data,index)=>({convid:data.id,...data.senders.data[0],updated_time:data.updated_time,image:profilesData[index].profile_pic,assignedTo:null}))
     const conversations={conversations:conversations_,paging:response.data.paging}
     const convsId=conversations_.map((conv)=>conv.convid)
     console.log(convsId)
@@ -57,7 +57,8 @@ const readConversations=async(req,res,err)=>{
 }
 const readMessages=(req,res,err)=>{
     const {convId}=req.params
-    axios.get(`${FACEBOOK}${convId}/messages?access_token=${TEST_ACCESS}&fields=message,from,to`).then((response)=>{
+    axios.get(`${FACEBOOK}${convId}/messages?access_token=${TEST_ACCESS}&fields=message,from,to,created_time`).then((response)=>{
+ 
         return res.json({messages:response.data.data.reverse()})
     }).catch((e)=>{
        // console.log(e.response.data)

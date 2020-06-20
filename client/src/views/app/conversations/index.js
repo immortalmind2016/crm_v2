@@ -8,7 +8,7 @@ import ChatHeading from '../../../components/applications/ChatHeading';
 import MessageCard from '../../../components/applications/MessageCard';
 import SaySomething from "../../../components/applications/SaySomething";
 import io from 'socket.io-client';
-
+import moment from "moment"
 class index extends Component {
     state = {
         conversations: [],
@@ -52,7 +52,7 @@ class index extends Component {
                 if (response.data.convs.conversations.length != 0) {
                     this.setState({ convId: userOne.convid })
 
-                    this.openConv(userOne.convid, { name: userOne.name, thumb: userOne.image })
+                    this.openConv(userOne.convid, { name: userOne.name, thumb: userOne.image,updated_time:userOne.updated_time })
                 }
 
                 this.setState({ conversations: response.data.convs.conversations, me: response.data.user, shownConvs: response.data.convs.conversations, users: response.data.users }, () => {
@@ -61,6 +61,7 @@ class index extends Component {
                     } else if ((userOne.assignedTo != this.state.me._id) || userOne.assignedTo == null) {
                         this.setState({ open: false })
                     }
+                    
                     if ((userOne.assignedTo != this.state.me._id)) {
                         this.setState({ own: false })
                     } else {
@@ -167,7 +168,7 @@ class index extends Component {
             .then((response) => {
                 console.log(response ,"REPONSEEEEEEEEEEE")
 
-                this.setState({ messages: response.data.messages, messageUser: { ...userInfo, id: response.data.messages[0].from.id==this.state.pageId?response.data.messages[0].to.data[0].id:response.data.messages[0].from.id }, convId: id })
+                this.setState({ messages: response.data.messages, messageUser: { ...userInfo, id: response.data.messages[0].from.id==this.state.pageId?response.data.messages[0].to.data[0].id:response.data.messages[0].from.id }, convId: id,updated_time:userInfo.updated_time })
             })
     }
     toggleAppMenu = (data) => {
@@ -191,7 +192,7 @@ Your browser does not support the audio element.
                 <div className="row">
                     <div className="col-lg-9 col-sm-12" style={{position:"relative",borderRight:"1px solid #d7d7d7"}}>
                         <div className="messages-div chat-app">
-                            <ChatHeading name={this.state.messageUser.name} thumb={this.state.messageUser.thumb} lastSeenDate="24">
+                            <ChatHeading name={this.state.messageUser.name} thumb={this.state.messageUser.thumb}  lastSeenDate={moment(this.state.updated_time).fromNow()}>
 
 
                             </ChatHeading>
@@ -208,10 +209,10 @@ Your browser does not support the audio element.
                                 containerRef={ref => { }}
                                 options={{ suppressScrollX: true, wheelPropagation: false }}>
                                 {this.state.messages.map((msg) => (
-                                    msg.from.id == this.state.pageId ? <MessageCard sender={{ name: msg.message, thumb: "https://scontent-mxp1-1.xx.fbcdn.net/v/t1.0-9/p960x960/93245412_103718371316468_4553994935375757312_o.png?_nc_cat=107&_nc_sid=85a577&_nc_ohc=apfxHdnatqAAX-KvCym&_nc_ht=scontent-mxp1-1.xx&oh=fe4340f6a05032707b1c07d3f59b91cb&oe=5F094A40" }} item={{ time: null, sender: "1" }} currentUserid={"2"}>
+                                    msg.from.id == this.state.pageId ? <MessageCard sender={{ name: msg.message, thumb: "https://scontent-mxp1-1.xx.fbcdn.net/v/t1.0-9/p960x960/93245412_103718371316468_4553994935375757312_o.png?_nc_cat=107&_nc_sid=85a577&_nc_ohc=apfxHdnatqAAX-KvCym&_nc_ht=scontent-mxp1-1.xx&oh=fe4340f6a05032707b1c07d3f59b91cb&oe=5F094A40" }} item={{ time:moment(msg.created_time).fromNow(), sender: "1" }} currentUserid={"2"}>
 
                                     </MessageCard> :
-                                        <MessageCard sender={{ name: msg.message, thumb: this.state.messageUser.thumb }} item={{ time: null, sender: "1" }} currentUserid={"1"}>
+                                        <MessageCard sender={{ name: msg.message, thumb: this.state.messageUser.thumb }} item={{ time: moment(msg.created_time).fromNow(), sender: "1" }} currentUserid={"1"}>
 
                                         </MessageCard>
 
