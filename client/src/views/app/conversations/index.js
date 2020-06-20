@@ -25,7 +25,8 @@ class index extends Component {
         own: true,
         users: [],
         ring:false,
-        anotherUserId: ""
+        anotherUserId: "",
+        notAssign:true
 
     }
     componentDidMount() {
@@ -58,15 +59,18 @@ class index extends Component {
 
                 this.setState({ conversations: response.data.convs.conversations, me: response.data.user, shownConvs: response.data.convs.conversations, users: response.data.users }, () => {
                     if (this.state.me.convs.indexOf(userOne.convid) > -1) {
-                        this.setState({ open: true })
-                    } else if ((userOne.assignedTo != this.state.me._id) || userOne.assignedTo == null) {
-                        this.setState({ open: false })
+                        this.setState({ open: true,notAssign:false })
+                    } else if ((userOne.assignedTo != this.state.me._id)) {
+                        this.setState({ open: false,notAssign:false })
+                    }
+                    if(userOne.assignedTo == null){
+                        this.setState({notAssign:true})
                     }
                     
                     if ((userOne.assignedTo != this.state.me._id)) {
-                        this.setState({ own: false })
+                        this.setState({ own: false,notAssign:false })
                     } else {
-                        this.setState({ own: true })
+                        this.setState({ own: true,notAssign:false })
                     }
                 })
             })
@@ -152,14 +156,17 @@ class index extends Component {
         try {
             console.log(this.state.me, id, "CHECKCOUT")
             if ((userInfo.assignedTo != this.state.me._id)) {
-                this.setState({ own: false })
+                this.setState({ own: false,notAssign:false })
             } else {
-                this.setState({ own: true })
+                this.setState({ own: true,notAssign:false  })
+            }
+            if(userInfo.assignedTo == null){
+                this.setState({notAssign:true})
             }
             if (this.state.me.convs.indexOf(id) > -1) {
-                this.setState({ open: true })
+                this.setState({ open: true,notAssign:false  })
             } else if ((userInfo.assignedTo != this.state.me._id ) || userInfo.assignedTo == null) {
-                this.setState({ open: false })
+                this.setState({ open: false ,notAssign:false })
             }
         } catch (e) {
             console.log("EE ", e)
