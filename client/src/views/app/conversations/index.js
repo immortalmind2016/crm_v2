@@ -72,6 +72,7 @@ class index extends Component {
     }
     assignToMe = () => {
         const convId = this.state.convId
+        this.setState({ own: true,open:true })
         axios.post(`${API_BASE_URL}/conv/assign`, {
             convId
         })
