@@ -205,7 +205,7 @@ Your browser does not support the audio element.
 
                             </ChatHeading>
                             <div style={{ marginTop: "-94px", marginBottom: "109px" }}>
-                                {this.state.open && <React.Fragment>
+                                {this.state.open||this.state.notAssign && <React.Fragment>
                                     {!this.state.own && <div onClick={this.assignToMe} className="btn btn-primary float-right ml-2">Assign to me</div>}
                                     <div className="btn btn-primary float-right" type="button" data-toggle="modal" data-target="#exampleModal">Assign to friend</div></React.Fragment>}
                             </div>
